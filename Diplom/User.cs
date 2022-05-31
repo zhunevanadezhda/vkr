@@ -89,7 +89,7 @@ namespace Diplom
                 codes.Add("$nameEC", company.Name);
                 codes.Add("$adresEC", company.Adres);
                 codes.Add("$ogrnEC", company.OGRN);
-                codes.Add("$dateOGRNEC", company.DateOGRN.ToString());
+                codes.Add("$dateOGRNEC", company.DateOGRN.ToString("dd.MM.yyyy"));
                 codes.Add("$formEC", company.Form);
                 codes.Add("$emailEC", company.Email);
                 codes.Add("$telehoneEC", company.Telephone);

@@ -113,9 +113,9 @@ namespace Diplom
         public Dictionary<string,string> getCode()
         {
             Dictionary<string, string> codes = new Dictionary<string, string>();
-            codes.Add("$dateInspection", dateInspection.ToString());
-            codes.Add("$dateValutaion", dateValutaion.ToString());
-            codes.Add("$dateReport", dateReport.ToString());
+            codes.Add("$dateInspection", dateInspection.ToString("dd.MM.yyyy"));
+            codes.Add("$dateValutaion", dateValutaion.ToString("dd.MM.yyyy"));
+            codes.Add("$dateReport", dateReport.ToString("dd.MM.yyyy"));
             codes.Add("$basedOn", basedOn);
             codes.Add("$goal", goal);
             codes.Add("$limitation", limitation);

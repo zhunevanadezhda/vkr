@@ -45,6 +45,8 @@ namespace Diplom
             if (samples != null)
                 foreach (Sample s in samples)
                     listBox1.Items.Add(s.Name);
+            else
+                samples = new List<Sample>();
         }
 
         private void reference_bt_Click(object sender, EventArgs e)
@@ -357,8 +359,8 @@ namespace Diplom
                     FindAndReplace(wordApp, kvp.Key, kvp.Value);
                 //Owners
                 Owner owners = new Owner();
-                owners.FizOwners = dataBase.GetHumanOwners(ReportId);
-                owners.UrOwners = dataBase.GetCompaniesOwners(ReportId);
+                owners.FizOwners = dataBase.GetHumanOwners_(ReportId);
+                owners.UrOwners = dataBase.GetCompaniesOwners_(ReportId);
                 if (owners.FizOwners.Count > 0 || owners.UrOwners.Count > 0)
                 {
                     codes = owners.getCodes();
@@ -383,9 +385,12 @@ namespace Diplom
                     dt.Columns.Add("Значение владельца");
                     foreach (Element e in realEstate.Elements)
                     {
-                        if (string.IsNullOrEmpty(e.Unit))
-                            dt.Rows.Add(e.Name, e.Value);
-                        else dt.Rows.Add(e.Name + ", " + e.Unit, e.Value);
+                        if (!e.Name.Contains("Итог"))
+                        {
+                            if (string.IsNullOrEmpty(e.Unit))
+                                dt.Rows.Add(e.Name, e.Value);
+                            else dt.Rows.Add(e.Name + ", " + e.Unit, e.Value);
+                        }
                     }
                     AddTable(aDoc, "$tableRE", dt);
                 }

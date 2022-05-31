@@ -26,8 +26,8 @@ namespace Diplom
               //Metods.Add("доходный|метод капитализации");
               Valuation form = new Valuation(9, "участок", Metods, null);
               Application.Run(form);*/
-            //SampleForm form = new SampleForm(1,9);
-            //Application.Run(form);
+           // SampleForm form = new SampleForm(11,15);
+           // Application.Run(form);
           //  ReportForm form = new ReportForm(1, 9, "участок");
             //Application.Run(form);
             // Application.Run(new Reference());

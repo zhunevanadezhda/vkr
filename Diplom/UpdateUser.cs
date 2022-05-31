@@ -14,6 +14,7 @@ namespace Diplom
         private bool _isPasportNumber = false;
         private bool _isPasportDate = false;
         private bool _isPasportWhere = false;
+        private int CompanyId=-1;
         private BD dataBase = new BD();
         private int Id;
         public UpdateUser(int id)
@@ -22,6 +23,7 @@ namespace Diplom
             User user = dataBase.GetUserById(id);
             cancel_bt.FlatStyle = FlatStyle.Popup;
             save_bt.FlatStyle = FlatStyle.Popup;
+            Id = id;
             load(user);
         }
 
@@ -50,11 +52,12 @@ namespace Diplom
                 formCom_tb.Text = user.Company.Form;
                 ogrnCom_tb.Text = user.Company.OGRN;
                 if (user.Company.DateOGRN!=DateTime.MinValue)
-                    dateogrnCom_tb.Text = Convert.ToString(user.Company.DateOGRN);
+                    dateogrnCom_tb.Text = user.Company.DateOGRN.ToString("dd.MM.yyyy");
                 adresCom_tb.Text = user.Company.Adres;
-                telephone_tb.Text = user.Company.Telephone;
+                telephoneCom_tb.Text = user.Company.Telephone;
                 emailCom_tb.Text = user.Company.Email;
                 insuranceCom_tb.Text = user.Company.Insurance;
+                CompanyId = user.Company.Id;
             }
             else
             {
@@ -172,12 +175,17 @@ namespace Diplom
             User newUser = new User(Id,name_tb.Text, surname_tb.Text, patronym_tb.Text,telephone_tb.Text, "", "", numberSROO_tb.Text, nameSROO_tb.Text, insuranceCom_tb.Text, experience, education_tb.Text, membership_tb.Text);
             if (_isCompany)
             {
-                Company company = dataBase.GetCompanyByOGRN(ogrnCom_tb.Text);
-                if (company != null)
+               // Company company = dataBase.GetCompanyByOGRN(ogrnCom_tb.Text);
+                if (CompanyId>-1)
+                { //newUser.Company = company;
+                    Company company = new Company(nameCom_tb.Text, adresCom_tb.Text, ogrnCom_tb.Text, DateTime.Parse(dateogrnCom_tb.Text), formCom_tb.Text, emailCom_tb.Text, telephoneCom_tb.Text, insuranceCom_tb.Text);
+                    company.Id = CompanyId;
+                    dataBase.UpdateCompany(company);
                     newUser.Company = company;
+                }
                 else
                 {
-                    company = new Company(nameCom_tb.Text, adresCom_tb.Text, ogrnCom_tb.Text, DateTime.Parse(dateogrnCom_tb.Text), formCom_tb.Text, emailCom_tb.Text, telephoneCom_tb.Text, insuranceCom_tb.Text);
+                    Company company = new Company(nameCom_tb.Text, adresCom_tb.Text, ogrnCom_tb.Text, DateTime.Parse(dateogrnCom_tb.Text), formCom_tb.Text, emailCom_tb.Text, telephoneCom_tb.Text, insuranceCom_tb.Text);
                     int id = dataBase.AddCompany(company);
                     company.Id = id;
                     newUser.Company = company;
@@ -185,6 +193,8 @@ namespace Diplom
             }
             else if (_isPasportNumber)
             {
+                if (dataBase.GetCompanyByUser(Id))
+                    dataBase.DeleteUCom(Id);
                 newUser.PasportDate = DateTime.Parse(pasportDate_tb.Text);
                 newUser.PasportNumber = pasportNumber_tb.Text;
                 newUser.PasportWhere = pasportWhere_tb.Text;

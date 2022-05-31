@@ -31,11 +31,11 @@ namespace Diplom
             Dictionary<string,string> codes = new Dictionary<string, string>();
             int k = 1;
             foreach (Company c in UrOwners)
-            { codes.Add(k.ToString(), c.Form + " \"" + c.Name + "\", " + c.Adres + ", " + c.OGRN + ", " + c.DateOGRN + ", " + c.Email + ", " + c.Telephone);
+            { codes.Add(k.ToString(), c.Form + " \"" + c.Name + "\", " + c.Adres + ", " + c.OGRN + ", " + c.DateOGRN.ToString("dd.MM.yyyy") + ", " + c.Email + ", " + c.Telephone);
                 k++;
             }
             foreach (Human h in FizOwners)
-            { codes.Add(k.ToString(), h.Surname + " " + h.Name + " " + h.Patronym + "; паспортные данные" + h.PasportNumber + ", выдан:" + h.PasportDate + ", " + h.PasportWhere);
+            { codes.Add(k.ToString(), h.Surname + " " + h.Name + " " + h.Patronym + "; паспортные данные" + h.PasportNumber + ", выдан:" + h.PasportDate.ToString("dd.MM.yyyy") + ", " + h.PasportWhere);
                 k++;
             }
             return codes;

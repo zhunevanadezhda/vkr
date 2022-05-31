@@ -469,7 +469,13 @@ namespace Diplom
                 {
                     // foreach (DataGridViewRow r in object_dgv.Rows)
                     //{
+
                     Element element;
+                    if (!dataBase.IsElementsExist(ids["Object"]))
+                    {
+                        element = new Element("Цена за один кв.м.", "тыс.руб.", "", i, 0);
+                        dataBase.AddElement(ids["Object"], element);
+                    }
                     string name = Convert.ToString(object_dgv.Rows[i].Cells[0].Value);
                     //  MessageBox.Show(name);
                     switch (name)
@@ -933,13 +939,18 @@ namespace Diplom
                 if (Convert.ToString(object_dgv.Rows[e.RowIndex].Cells[0].Value) != "added")
                     object_dgv.Rows[e.RowIndex].Cells[0].Value = "changed";
             }
-        }
+            isRealEstatesChanged = true;
+            Sync();
+    }
         private bool isElementExist(string name, int index)
         {
-            foreach (DataGridViewRow r in object_dgv.Rows)
-                if (r.Index != index && Convert.ToString(r.Cells[1].Value) == name)
-                    return true;
-            return false;
+            bool b = true;
+            for (int i = 0; i < object_dgv.Rows.Count; i++)
+                //foreach (DataGridViewRow r in object_dgv.Rows)
+                if (object_dgv.Rows[i].Index != index && Convert.ToString(object_dgv.Rows[i].Cells[1].Value) == name)
+                { b = true; i = object_dgv.Rows.Count; }
+                else b = false;
+            return b;
         }
         private void addElement_bt_Click(object sender, EventArgs e)
         {
@@ -949,9 +960,12 @@ namespace Diplom
             while (b)
             {
                 name += i;
-                b = !isElementExist(name, -1);
+                b = isElementExist(name, -1);
+               // MessageBox.Show(b+"");
             }
             object_dgv.Rows.Add("added", name, name);
+            isRealEstatesChanged = true;
+            Sync();
         }
         private void deleteElement_bt_Click(object sender, EventArgs e)
         {
@@ -963,6 +977,8 @@ namespace Diplom
                 ObjectChange(null, null);
             }
             else object_dgv.Rows.RemoveAt(index);
+            isRealEstatesChanged = true;
+            Sync();
         }
 
         private void ReportChange(object sender, EventArgs e)

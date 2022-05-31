@@ -87,7 +87,7 @@ namespace Diplom
         }
         public string getValue(string name)
         {
-            return elements.Find(x=>x.Name == name).Value;
+            return elements.Find(x => x.Name == name).Value;
         }
         public int getCorrect(string name)
         {

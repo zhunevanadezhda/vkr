@@ -13,6 +13,11 @@ namespace Diplom
         private static readonly byte[] key = Encoding.ASCII.GetBytes("SFDGKLGFHJ234LKSFDSFDGKLGFHJ234L");
         private static readonly byte[] iv = Encoding.ASCII.GetBytes("sdfhjksdhfklk234");
 
+        private static string getString_(object o)
+        {
+            if (o == DBNull.Value) return "";
+            return (string)o;
+        }
         private static string getString(object o)
         {
             if (o == DBNull.Value) return null;
@@ -240,9 +245,9 @@ namespace Diplom
                 getString(reader["pasportWhere"]), (string)reader["email"], (string)reader["password"],
                 getString(reader["numberSROO"]), getString(reader["nameSROO"]), getString(reader["insurance"]), (int)reader["experience"],
                 getString(reader["education"]), getString(reader["membership"]));
-            command = new SqlCommand("select id_c,id_u,id from Companies, UCom where id=" + id_u + " and id=id_c", conn);
+            command = new SqlCommand("select id_c,id_u from Companies, UCom where id_u=" + id_u + " and id=id_c", conn);
             reader = command.ExecuteReader();
-            if (!reader.Read())
+            if (reader.Read())
             {
                 int id = (int)reader["id_c"];
                 command = new SqlCommand("select * from Companies where id=" + id, conn);
@@ -393,7 +398,11 @@ namespace Diplom
             {
                 if (newUser.Company != null)
                 {
-                    command = new SqlCommand("update ucom set id_c=" + newUser.Company.Id + " where id_u=" + newUser.Id);
+                    command = new SqlCommand("select * from UCom where id_u=" + newUser.Id,conn);
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                        command = new SqlCommand("update ucom set id_c=" + newUser.Company.Id + " where id_u=" + newUser.Id,conn);
+                    else command = new SqlCommand("insert into ucom(id_u,id_c) values(" + newUser.Id + "," + newUser.Company.Id + ")", conn);
                     command.ExecuteNonQuery();
                 }
                 conn.Close(); return true;
@@ -412,6 +421,36 @@ namespace Diplom
                 conn.Close(); return true;
             }
             else { conn.Close(); return false; }
+        }
+        public bool DeleteUCom(int id)
+        {
+            conn.Open();
+            SqlCommand command = new SqlCommand("delete from UCom where id_u=" + id, conn);
+            if (command.ExecuteNonQuery() > 0)
+            {
+                conn.Close();
+                return true;
+            }
+            else
+            {
+                conn.Close();
+                return false;
+            }
+        }
+        public bool GetCompanyByUser(int id)
+        {
+            conn.Open();
+            SqlCommand command = new SqlCommand("select * from UCom where id_u=" + id, conn);
+            SqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            { conn.Close();
+                return true;
+            }
+            else
+            {
+                conn.Close();
+                return false;
+            }
         }
 
         //Company
@@ -724,6 +763,23 @@ namespace Diplom
             conn.Close();
             return owners;
         }
+        public List<Human> GetHumanOwners_(int ReportId)
+        {
+            conn.Open();
+            SqlCommand command = new SqlCommand("select * from Humans, HuRep where id_r=" + ReportId + " and id_h=id and isOwner=1", conn);
+            SqlDataReader reader = command.ExecuteReader();
+            List<Human> owners = new List<Human>();
+            while (reader.Read())
+            {
+                //Human owner = new Human((int)reader["id"], (string)reader["name"], (string)reader["surname"], (string)reader["patronym"], (string)reader["pasportNumber"],
+                //  (DateTime)reader["pasportDate"], (string)reader["pasportWhere"]);
+                Human owner = new Human((int)reader["id"], getString(reader["name"]), getString(reader["surname"]), getString(reader["patronym"]), "",getString(reader["pasportNumber"]),
+                  getDateTime(reader["pasportDate"]), getString(reader["pasportWhere"]));
+                owners.Add(owner);
+            }
+            conn.Close();
+            return owners;
+        }
         public Human GetHuman(int HumanId)
         {
             conn.Open();
@@ -851,6 +907,23 @@ namespace Diplom
         {
             conn.Open();
             SqlCommand command = new SqlCommand("select id,name,form from Companies, ComRep where id_r=" + ReportId + " and id_c=id and isOwner=1 and isCostumer=0", conn);
+            SqlDataReader reader = command.ExecuteReader();
+            List<Company> owners = new List<Company>();
+            while (reader.Read())
+            {
+                //Human owner = new Human((int)reader["id"], (string)reader["name"], (string)reader["surname"], (string)reader["patronym"], (string)reader["pasportNumber"],
+                //  (DateTime)reader["pasportDate"], (string)reader["pasportWhere"]);
+                //Human owner = new Human((int)reader["id"], (string)reader["name"], (string)reader["surname"], (string)reader["patronym"]);
+                Company owner = new Company((int)reader["id"], getString(reader["name"]), getString(reader["form"]));
+                owners.Add(owner);
+            }
+            conn.Close();
+            return owners;
+        }
+        public List<Company> GetCompaniesOwners_(int ReportId)
+        {
+            conn.Open();
+            SqlCommand command = new SqlCommand("select id,name,form from Companies, ComRep where id_r=" + ReportId + " and id_c=id and isOwner=1", conn);
             SqlDataReader reader = command.ExecuteReader();
             List<Company> owners = new List<Company>();
             while (reader.Read())
